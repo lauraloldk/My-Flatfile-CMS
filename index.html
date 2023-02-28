@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Flatfile CMS</title>
+	<style>
+		#menu {
+			background-color: red;
+			color: white;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+		}
+		
+		#menu a {
+			color: white;
+			text-decoration: none;
+			margin: 0 10px;
+		}
+		
+		#login-box {
+			background-color: green;
+			color: white;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			width: 200px;
+			height: 500px;
+			flex-direction: column;
+			justify-content: center;
+		}
+		
+		#login-box input[type=text], #login-box input[type=password] {
+			padding: 5px;
+			margin: 0 10px;
+		}
+		
+		#login-box input[type=submit] {
+			background-color: yellow;
+			color: purple;
+			padding: 5px 10px;
+			border: 2px solid purple;
+			border-radius: 20px;
+			cursor: pointer;
+			margin-top: 10px;
+		}
+		
+		#right-box {
+			background-color: cyan;
+			height: 100%;
+			width: 800px;
+			height: 520px;
+		}
+		
+		.new-user-btn {
+			background-color: yellow;
+			color: purple;
+			padding: 5px 10px;
+			border: 2px solid purple;
+			border-radius: 20px;
+			cursor: pointer;
+			margin: 10px;
+		}
+	</style>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+</head>
+<body>
+	<div id="menu">
+		<a href="index.html">Home</a>
+		<a href="feedback.php">Feedback</a>
+		<a href="games.html">Games</a>
+		<a href="#">Assets</a>
+	</div>
+	<div id="login-and-right-box" style="display:flex;">
+    <div id="login-box">
+        
+    </div>
+    <div id="right-box">
+        
+    </div>
+</div>
+	<script>
+    $(document).ready(function() {
+        // Check if the user is logged in
+        if (document.cookie.includes("loggedIn=true")) {
+            // Get the username from the cookie
+            var username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+            // Load the profile page with the username parameter
+            $('#right-box').load('profile.php?username=' + username);
+        } else {
+            // The user is not logged in, so load the news page
+            $('#right-box').load('newslist.php');
+        }
+
+        $('.new-user-btn').click(function(event) {
+            event.preventDefault();
+          //  $('#right-box').load('adduser.html');
+        });
+    });
+</script>
+
+</body>
+</html>
+
+

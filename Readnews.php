@@ -5,7 +5,7 @@ if (isset($_GET['id'])) {
 
     // Load the list of article IDs and titles
     $ids_file = file("/data/news/id.txt");
-    $titles_file = file("/data/news/title.txt");
+    $titles_file = file("data/news/title.txt");
 
     // Find the line in the IDs file that matches the submitted ID
     $id_line = array_search($article_id . "\n", $ids_file);
@@ -15,11 +15,11 @@ if (isset($_GET['id'])) {
         $title = rtrim($titles_file[$id_line], "\n");
 
         // Load the article content from the article file
-        $article_file = "/data/news/articles/{$article_id}.txt";
+        $article_file = "data/news/articles/{$article_id}.txt";
         $article = file_get_contents($article_file);
 
         // Get the date and time from the date-time file
-        $datetime_file = fopen("/data/news/date-time.txt", "r");
+        $datetime_file = fopen("data/news/date-time.txt", "r");
         fseek($datetime_file, $id_line * 20);
         $datetime = rtrim(fread($datetime_file, 20), "\n");
         fclose($datetime_file);

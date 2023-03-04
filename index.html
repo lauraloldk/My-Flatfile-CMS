@@ -68,8 +68,25 @@
 	<div id="menu">
 		<a href="index.html">Home</a>
 		<a href="feedback.php">Feedback</a>
-		<a href="games.html">Games</a>
-		<a href="#">Assets</a>
+		<script>
+			// read the menu data from the file
+			fetch("data/menu.txt")
+				.then(response => response.text())
+				.then(menu_data => {
+					// split the menu data into items
+					const menu_items = menu_data.trim().split("\n");
+					
+					// add the menu items to the menu
+					for (const item of menu_items) {
+						const [text, link] = item.slice(1, -1).split(":");
+						const link_elem = document.createElement("a");
+						link_elem.href = link;
+						link_elem.textContent = text;
+						document.getElementById("menu").appendChild(link_elem);
+					}
+				})
+				.catch(error => console.log(error));
+		</script>
 	</div>
 	<div id="login-and-right-box" style="display:flex;">
     <div id="login-box">

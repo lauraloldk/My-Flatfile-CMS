@@ -1,42 +1,63 @@
 <?php
-// read the number of messages per page from the tagwall settings file
-$tagwall_settings_file = "data/tagwallsettings.txt";
-$per_page = intval(file_get_contents($tagwall_settings_file));
-
-// read the messages from the tagwall file
+// load the tagwall file
 $tagwall_file = "data/tagwall.txt";
-$tagwall = array_reverse(file($tagwall_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+$lines = file($tagwall_file);
+$lines = array_reverse($lines);
 
-// calculate the current page number based on the number of messages per page
-$current_page = isset($_GET["page"]) ? intval($_GET["page"]) : 1;
-$total_pages = ceil(count($tagwall) / $per_page);
-$offset = ($current_page - 1) * $per_page;
-$messages = array_slice($tagwall, $offset, $per_page);
+// get the number of posts per page from the settings file
+$settings_file = "data/tagwallsettings.txt";
+$lines_settings = file($settings_file);
+$posts_per_page = intval(trim($lines_settings[0]));
 
-// display the messages on the current page
-echo "<ul>";
-foreach ($messages as $line) {
-    $parts = explode(":", $line);
-    $name = $parts[0];
-    $message = $parts[1];
-    echo "<li><h1>{$name}</h1>{$message}</li>";
+// get the current page number from the URL parameter
+$current_page = 1;
+if (isset($_GET["page"])) {
+    $current_page = intval($_GET["page"]);
 }
-echo "</ul>";
 
-// display the next page button if there are more messages than the number of messages per page
-if ($total_pages > 1 && $current_page < $total_pages +1) {
+// calculate the total number of pages
+$total_pages = ceil(count($lines) / $posts_per_page);
+
+// calculate the starting index for the current page
+$start_index = ($current_page - 1) * $posts_per_page;
+
+// iterate over the lines and print them
+for ($i = $start_index; $i < count($lines) && $i < $start_index + $posts_per_page; $i++) {
+    // parse the name and message from the line
+    list($name, $message) = explode(":", $lines[$i], 2);
+
+    // get the username from the IP profiles file
+    $ip_profiles_file = "data/IPprofiles.txt";
+    $ip_profiles = file($ip_profiles_file, FILE_IGNORE_NEW_LINES);
+    $found = false;
+    foreach ($ip_profiles as $ip_profile) {
+        list($ip, $username, $isadmin) = explode(":", $ip_profile);
+        if ($ip == $_SERVER["REMOTE_ADDR"]) {
+            $name = $username;
+            $found = true;
+            break;
+        }
+    }
+
+    // print the name and message
+    echo "<h3>{$name}</h3>";
+    echo "<p>{$message}</p>";
+
+    // add a delete link for admins
+    if ($found && $isadmin == 1) {
+        echo "<p><a href=\"deletetag.php?id=" . ($i+1) . "\">Delete</a></p>";
+    }
+}
+
+// print the pagination links
+if ($total_pages > 1 && $current_page < $total_pages) {
     $next_page = $current_page + 1;
     $prev_page = $current_page - 1;
     if($current_page > 1){
-    echo "<a href=\"tagwall.php?page={$prev_page}\"><--</a>";    
+        echo "<a href=\"tagwall.php?page={$prev_page}\"><--</a>";    
     }
     if($current_page < $total_pages){
-    echo "<a href=\"tagwall.php?page={$next_page}\">--></a>";
+        echo "<a href=\"tagwall.php?page={$next_page}\">--></a>";
     }
-    
-}
-if($current_page > $total_pages)
-{
-    header("Location: tagwall.php?page={$total_pages}");
 }
 ?>

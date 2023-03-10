@@ -1,5 +1,5 @@
 <?php
-
+include "checkip.php";
 // Function to sanitize input
 function sanitize_input($input) {
     $input = trim($input);
